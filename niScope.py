@@ -1,0 +1,440 @@
+__all__ = []
+
+import os
+import sys
+import textwrap
+import numpy 
+from numpy import ctypeslib
+import ctypes
+import ctypes.util
+import warnings
+from niScopeTypes import *
+
+
+if os.name=='nt':
+    # UNTESTED: Please report results to http://code.google.com/p/pylibniScope/issues
+ 
+	libname = 'niScope_32'
+#    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niScope.h'
+	lib = ctypes.util.find_library(libname)
+	if lib is None:
+		print 'niScope.dll not found'
+
+libniScope = ctypes.windll.LoadLibrary(lib)
+		
+class Scope(ViSession):
+	def __init__(self,resourceName="Dev2",IDQuery=False,resetDevice=False):
+		self.info = wfmInfo()
+		ViSession.__init__(self,0)
+		status = self.CALL('init',ViRsrc(resourceName),ViBoolean(IDQuery),ViBoolean(resetDevice),ctypes.byref(self))
+		return None
+		
+	def ConfigureHorizontalTiming(self,
+	minSampleRate=20000000,
+	minNumPts=1000,
+	refPositioin=0.5,
+	numRecords=1,
+	enforceRealtime=True):
+		status = self.CALL('ConfigureHorizontalTiming',self,
+			ViReal64(minSampleRate),
+			ViInt32(minNumPts),
+			ViReal64(refPositioin),
+			ViInt32(numRecords),
+			ViBoolean(enforceRealtime))
+		return 
+		
+	def CALL(self,name, *args):
+		"""
+		Calls libniScope function "name" and arguments "args".
+		"""
+		funcname = 'niScope_' + name
+		func = getattr(libniScope, funcname)
+		new_args = []
+		for a in args:
+			if isinstance (a, unicode):
+				print name, 'argument',a, 'is unicode'
+				new_args.append (str (a))
+			else:
+				new_args.append (a)
+		status = func(*new_args)
+		if status is not 0:
+			self.errorHandler(status)
+		return status
+		
+		
+	def ConfigureVertical(self,
+		channelList="0",
+		range=10,
+		offset=0,
+		coupling=COUPLING.DC,
+		probeAttenuation=1,
+		enabled=True):
+		"""
+		dfs
+		"""
+		status = self.CALL("ConfigureVertical",self,
+			ViConstString(channelList),
+			ViReal64(range),
+			ViReal64(offset),
+			ViInt32(coupling),
+			ViReal64(probeAttenuation),
+			ViBoolean(enabled))
+		return 
+	
+	def ConfigureTrigger(self,trigger_type='Immediate',*settings):
+		"""
+		Configures scope trigger type and settings. For each trigger type 
+		distinct settings must be defined.
+		
+		Parameter		Valid Values
+		
+		trigger_type	'Edge'
+						'Hysteresis'
+						'Window'
+						'Window'
+						'Software'
+						'Immediate'
+						'Digital'
+						'Video'
+	
+	
+		Trigger Type	Settings		Default Value	
+		
+		'Immediate'		N/A
+		
+		'Edge'			triggerSource 	TRIGGER_SOURCE.EXTERNAL
+						level 			0
+						slope 			SLOPE.POSITIVE
+						triggerCoupling COUPLING.DC
+						holdoff 		0
+						delay 			0
+		
+		'Hysteresis'	triggerSource  '0'
+		                level 	 		0	
+		                hysteresis		0.05
+		                slope			SLOPE.POSITIVE
+		                triggerCoupling	COUPLING.DC
+		                holdoff			0
+		                delay			0
+			
+		'Window'		triggerSource 	'0'	               
+		                lowLevel		0                       
+		                highLevel		0.1		               
+		                windowMode		TRIGGER_WINDOW.ENTERING_WINDOW	
+		                triggerCoupling	COUPLING.DC         	
+		                holdoff			0	                       
+		                delay			0		
+				
+		'Software'		holdoff			0
+						delay			0	
+		
+		'Digital'		triggerSource	'0'
+						slope			SLOPE.POSITIVE
+						holdoff			0
+						delay 			0
+		
+		'Video'			triggerSource	'0'				    
+		                enableDCRestore False				
+		                signalFormat	TV_TRIGGER_SIGNAL_FORMAT.VAL_PAL				
+		                event			TV_TRIGGER_EVENT.FIELD1	
+		                lineNumber		0					
+		                polarity		TV_TRIGGER_POLARITY.TV_POSITIVE		
+		                triggerCoupling	COUPLING.DC				
+		                holdoff			0				    
+		                delay           0
+
+		"""
+		args={
+			'Edge':lambda 
+				triggerSource 	= TRIGGER_SOURCE.EXTERNAL ,
+				level 			= 0                       ,
+				slope 			= SLOPE.POSITIVE          ,
+				triggerCoupling = COUPLING.DC     ,
+				holdoff 		= 0                       ,
+				delay 			= 0
+				:(					
+					ViConstString	(triggerSource	),
+					ViReal64		(level			),
+					ViInt32			(slope			),
+					ViInt32			(triggerCoupling),
+					ViReal64		(holdoff		),
+					ViReal64		(delay			)
+				),
+			'Hysteresis':lambda
+				triggerSource   = '0'                 ,
+				level 	 		= 0	                  ,
+				hysteresis		= 0.05                ,
+				slope			= SLOPE.POSITIVE      ,
+				triggerCoupling = COUPLING.DC ,
+				holdoff			= 0                   ,
+				delay			= 0
+				:(
+					ViConstString 	(triggerSource	),
+					ViReal64 		(level			),
+					ViReal64 		(hysteresis		),
+					ViInt32 		(slope			),
+					ViInt32 		(triggerCoupling),
+					ViReal64 		(holdoff		),
+					ViReal64 		(delay			)
+				),
+			'Window':lambda
+				triggerSource 	= '0'	               ,
+				lowLevel		= 0                       ,
+				highLevel		= 0.1		               ,
+				windowMode		= TRIGGER_WINDOW.ENTERING_WINDOW	,
+				triggerCoupling	= COUPLING.DC         	,
+				holdoff			= 0	                       ,
+				delay			= 0		
+				:(
+					ViConstString 	(triggerSource		),
+					ViReal64 		(lowLevel			),
+					ViReal64 		(highLevel			),
+					ViInt32 		(windowMode			),
+					ViInt32 		(triggerCoupling	),
+					ViReal64 		(holdoff			),
+					ViReal64 		(delay				)
+				),
+			'Software':lambda
+				holdoff	= 0,
+				delay	= 0	
+				:(
+					ViReal64 		(holdoff	),
+					ViReal64 		(delay		)
+				),
+			'Immediate':lambda:(),
+			'Digital':lambda
+				triggerSource	= '0'           ,
+				slope			= SLOPE.POSITIVE,
+				holdoff			= 0             ,
+				delay 			= 0
+				:(
+					ViConstString 	(triggerSource	),
+					ViInt32 		(slope			),
+					ViReal64 		(holdoff		),
+					ViReal64 		(delay			)
+				),
+			'Video':lambda
+			triggerSource	= '0'				                  	,
+            enableDCRestore = False				                  	,
+            signalFormat	= TV_TRIGGER_SIGNAL_FORMAT.VAL_PAL		,
+            event			= TV_TRIGGER_EVENT.FIELD1	,
+            lineNumber		= 0					                  	,
+            polarity		= TV_TRIGGER_POLARITY.POSITIVE		,
+            triggerCoupling	= COUPLING.DC				          	,
+            holdoff			= 0				                      	,
+            delay           = 0
+			:(				
+				ViConstString 					(triggerSource		),
+				ViBoolean 						(enableDCestore		),
+				ATTR_TV_TRIGGER_SIGNAL_FORMAT	(signalFormat		),
+				ViInt32 						(event				),
+				ViInt32 						(lineNumber			),
+				ViInt32 						(polarity			),
+				ViInt32 						(triggerCoupling	),
+				ViReal64 						(holdoff			),	
+				ViReal64 						(delay				)
+			),
+				
+		}[trigger_type](*settings)
+		status = self.CALL("ConfigureTrigger"+trigger_type,self,*args)
+		
+	def InitiateAcquisition(self):
+		status = self.CALL("InitiateAcquisition",self)
+		
+	def Abort(self):
+		status = self.CALL("Abort",self)
+		
+	def AcquisitionStatus(self):
+		status = self.CALL("AcquisitionStatus",self,ctypes.byref(ViInt32(acq_status)))
+		return acq_status.value
+		
+	def Commit(self):
+		status = self.CALL("Commit",self)
+	
+	def Fetch(self	                   ,
+		channelList  = "0"             ,
+		timeout      = 1	      	   ,
+		numSamples   = 1000        	   ,
+		dtype		 =	numpy.float64  ,
+		fill_mode	 = 'group_by_scan_number'):
+		
+		data_type = {
+			numpy.float64 	:''	        ,
+			numpy.int8  	:'Binary8'  ,
+			numpy.int16		:'Binary16' ,
+			numpy.int32 	:'Binary32' }[dtype]
+        
+		if fill_mode=='group_by_scan_number':
+			data = numpy.zeros((numSamples,1),dtype=numpy.float64)
+		else:
+			data = numpy.zeros((1,numSamples),dtype=numpy.float64)
+			
+		status = self.CALL("Fetch"+data_type,self,
+			ViConstString(channelList),
+			ViReal64(timeout),
+			ViInt32(numSamples),
+			data.ctypes.data,
+			ctypes.byref(self.info)
+			)
+		return data
+		
+	def TranferDataTo(self,data,channel_list = "0",timeout=1):
+		"""
+		
+		Parameters	
+		
+		channel_list
+		
+		The channel you will acquire data from; it may be a single channel,
+		such as "0" or "1", or a list of channels such as "0,1".
+		
+		timeout
+		
+		The time to wait in seconds for data to be acquired; using 0 for this
+		parameter tells NI-SCOPE to fetch whatever is currently available.
+		
+		"""
+		
+		#if len(channel_list.split(',')) is not data.shape[1]:
+		#	print "Number of data columns is differente than number of channels."
+		#	return
+		
+		#from numpy.ctypeslib import ndpointer
+		#arg = ndpointer(dtype='f8',ndim=2,shape=(2,1000),flags='CONTIGUOUS,ALIGNED')
+		data_type = {
+			'float64':''	    ,
+			'int8'   :'Binary8' ,
+			'int16'  :'Binary16',
+			'int32'  :'Binary32' }[data.dtype.__str__()]	
+		numSamples = max(data.shape)
+		#func = getattr(libniScope,'niScope_Fetch'+data_type)
+		#func.argtypes = [ViSession,ViConstString,ViReal64,ViInt32,arg,ctypes.POINTER(wfmInfo)]
+		#func(self,channel_list,timeout,numSamples,data,self.info)
+		print "num sample %d"%numSamples
+		self.CALL("Fetch"+data_type,self,
+			ViConstString(channel_list),
+			ViReal64(timeout),
+			ViInt32(numSamples),
+			data.ctypes.data,#_as(ctypes.POINTER(ViReal64)),
+			ctypes.byref(self.info)
+			)
+			
+	
+	def read(self):
+		self.ConfigureHorizontalTiming()
+		self.ConfigureVertical()
+		self.ConfigureTrigger()
+		self.InitiateAcquisition()
+		data = self.Fetch()
+		self.close()
+		return data
+	
+	def close(self):
+		status = self.CALL("close",self)
+
+# not implemented
+#ViStatus _VI_FUNC niScope_FetchComplex ( ViSession vi,
+#                                         ViConstString channelList,
+#                                         ViReal64 timeout,
+#                                         ViInt32 numSamples,
+#                                         NIComplexNumber* wfm,
+#                                         struct niScope_wfmInfo* wfmInfo);
+#
+#										 
+# ViStatus _VI_FUNC niScope_FetchComplexBinary16 ( ViSession vi,
+                                                 # ViConstString channelList,
+                                                 # ViReal64 timeout,
+                                                 # ViInt32 numSamples,
+                                                 # NIComplexI16* wfm,
+                                                 # struct niScope_wfmInfo* wfmInfo);
+
+
+
+	def errorHandler (self,errorCode):
+		MAX_FUNCTION_NAME_SIZE 	 = 55
+		IVI_MAX_MESSAGE_LEN      = 255
+		IVI_MAX_MESSAGE_BUF_SIZE = IVI_MAX_MESSAGE_LEN + 1
+		MAX_ERROR_DESCRIPTION    = (IVI_MAX_MESSAGE_BUF_SIZE * 2 + MAX_FUNCTION_NAME_SIZE + 75)
+
+		errorSource     	= ctypes.create_string_buffer(MAX_FUNCTION_NAME_SIZE)
+		errorDescription	= ctypes.create_string_buffer(MAX_ERROR_DESCRIPTION )
+		self.CALL("errorHandler",self,ViInt32(errorCode),errorSource,errorDescription)
+		print errorDescription.value
+	
+	def error_message (self,errorCode):
+		IVI_MAX_MESSAGE_LEN      = 255
+		IVI_MAX_MESSAGE_BUF_SIZE = IVI_MAX_MESSAGE_LEN + 1
+		errorMessage	=	ctypes.create_string_buffer(IVI_MAX_MESSAGE_BUF_SIZE)
+		self.CALL("error_message",self,ViStatus(errorCode),errorMessage)
+		print errorMessage.value
+	
+if __name__ == "__main__":
+	import matplotlib.pyplot as plt
+	import numpy as np
+	import sys
+	da = np.zeros((2,1000),dtype=np.float64)
+
+	
+#	plt.plot(data[0])
+#	plt.plot(data[1])
+#	plt.show()
+	
+	if sys.argv[1] == "test":
+		scope = Scope()
+		if sys.argv.__contains__("lower_sampling_rate"):
+			print "lower_sampling_rate"
+			scope.ConfigureHorizontalTiming(100000,1000,refPositioin=0.5,
+				numRecords=2,enforceRealtime=True)
+		else:
+			scope.ConfigureHorizontalTiming()
+		if sys.argv.__contains__("channels0and1"):
+			print "channels0and1"
+			scope.ConfigureVertical(channelList="0",range=10,offset=0,
+					coupling=COUPLING.DC,probeAttenuation=1,enabled=True)
+			scope.ConfigureVertical(channelList="1",range=10,offset=0,
+					coupling=COUPLING.DC,probeAttenuation=1,enabled=True)
+		else:
+			scope.ConfigureVertical()
+		if sys.argv.__contains__("external_trigger"):
+			print "external trigger"
+			scope.ConfigureTrigger("Edge",TRIGGER_SOURCE.EXTERNAL,2.5,SLOPE.POSITIVE,0,0)
+		else:
+			scope.ConfigureTrigger("Edge",TRIGGER_SOURCE.EXTERNAL,2.5,SLOPE.POSITIVE,0,0)
+		if sys.argv.__contains__("error_handler"):
+			scope.ConfigureTrigger("Edge","df",2.5,SLOPE.POSITIVE,0,0)
+		scope.InitiateAcquisition()
+		raw_input("press Enter")
+		if sys.argv.__contains__("transferDataTo_function"):
+			print "transferDataTo_function"
+			#da.flags['WRITEABLE']=True
+			np.ascontiguousarray(da)
+			scope.TranferDataTo(da,channel_list = '0',timeout = 1)
+			#da.flags['WRITEABLE']=False
+		else:
+			dat = scope.Fetch()
+		scope.close()
+	elif sys.argv[1] == "test_read":
+		pass
+	print "here2"
+	#a = data.transpose()
+	#b=da
+	
+	df= da[0]*3+1
+	print df
+	#r=data[1]
+	print "her3"
+	#print b
+	#c = b+1
+	#print c
+	#plt.figure()
+	#plt.show()
+	plt.plot(da[0])
+	plt.plot(da[1])
+	plt.show()
+	
+	#	plt.plot(da[0])
+	
+	#plt.plot(r)
+	#print "here4"
+	#plt.plot(data[1,:])
+	
