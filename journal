@@ -1,3 +1,4 @@
 Fri May 27 16:49:52 BRT 2011:
 Fri May 27 16:50:24 BRT 2011:installed first NIKAL-2.1 then NISCOPE-3.1
 Fri May 27 16:51:03 BRT 2011:needed to install the whole kernel source, headers only seemed not enough
+Tue May 31 13:10:44 BRT 2011:pass 'mem=4096M' as kernel boot parameter

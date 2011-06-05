@@ -11,19 +11,21 @@ import warnings
 from niScopeTypes import *
 
 
-if os.name=='nt':
-    # UNTESTED: Please report results to http://code.google.com/p/pylibniScope/issues
- 
-	libname = 'niScope_32'
+libname = 'niScope_32'
 #    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niScope.h'
-	lib = ctypes.util.find_library(libname)
-	if lib is None:
+lib = ctypes.util.find_library(libname)
+if lib is None:
+	if os.name=='posix':
+		print 'libniScope_32.dll not found, is NI-SCOPE installed?'
+	if os.name=='nt':
 		print 'niScope.dll not found'
-
-libniScope = ctypes.windll.LoadLibrary(lib)
+if os.name=='posix':
+	libniScope = ctypes.cdll.LoadLibrary(lib)
+if os.name=='nt':
+	libniScope = ctypes.windll.LoadLibrary(lib)
 		
 class Scope(ViSession):
-	def __init__(self,resourceName="Dev2",IDQuery=False,resetDevice=False):
+	def __init__(self,resourceName="Dev1",IDQuery=False,resetDevice=False):
 		self.info = wfmInfo()
 		ViSession.__init__(self,0)
 		status = self.CALL('init',ViRsrc(resourceName),ViBoolean(IDQuery),ViBoolean(resetDevice),ctypes.byref(self))
