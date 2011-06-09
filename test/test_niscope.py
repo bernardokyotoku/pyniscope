@@ -46,3 +46,6 @@ class test_niscope:
 
 	def test_autosetup(self):	
 		self.scope.AutoSetup()
+
+	def test_configure_acquisition(self):
+		self.scope.ConfigureAcquisition()
