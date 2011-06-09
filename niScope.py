@@ -104,17 +104,19 @@ class Scope(ViSession):
 		
 	def ConfigureVertical(self,
 		channelList="0",
-		range=10,
+		voltageRange=10,
 		offset=0,
 		coupling=COUPLING.DC,
 		probeAttenuation=1,
 		enabled=True):
 		"""
-		dfs
+		Configures the most commonly configured attributes of the digi-
+		tizer vertical subsystem, such as the range, offset, coupling, 
+		probe attenuation, and the channel.
 		"""
 		status = self.CALL("ConfigureVertical",self,
 			ViConstString(channelList),
-			ViReal64(range),
+			ViReal64(voltageRange),
 			ViReal64(offset),
 			ViInt32(coupling),
 			ViReal64(probeAttenuation),
