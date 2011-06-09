@@ -282,6 +282,22 @@ class Scope(ViSession):
 			byref(self.info)
 			)
 		return data
+
+	def ActualRecordLength(self):
+		"""
+		Returns the actual number of points the digitizer acquires for
+		each channel. After configuring the digitizer for an acquisition
+		, call this function to determine the size of the waveforms that
+		the digitizer acquires. The value is equal to or greater than 
+		the minimum number of points specified in any of the Configure 
+		Horizontal functions.
+
+		Allocate a ViReal64 array of this size or greater to pass as the
+		waveformArray of the ReadWaveform and FetchWaveform functions. 
+		"""
+		record = ViInt32()
+		self.CALL("ActualRecordLength",self,byref(record))
+		return record.value
 		
 	def TranferDataTo(self,data,channel_list = "0",timeout=1):
 		"""
@@ -357,6 +373,3 @@ class Scope(ViSession):
 		IVI_MAX_MESSAGE_LEN      = 255
 		IVI_MAX_MESSAGE_BUF_SIZE = IVI_MAX_MESSAGE_LEN + 1
 		errorMessage = create_string_buffer(IVI_MAX_MESSAGE_BUF_SIZE)
-		self.CALL("error_message",self,ViStatus(errorCode),errorMessage)
-		return errorMessage.value
-	
