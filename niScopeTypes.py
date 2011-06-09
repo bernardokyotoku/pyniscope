@@ -16,12 +16,12 @@ ViChar = ctypes.POINTER(ViConstString)
 class wfmInfo(ctypes.Structure):
 	_fields_ = [("absoluteInitialX", ViReal64),
 				("relativeInitialX", ViReal64),
-				("xIncrement      ", ViReal64),
-				("actualSamples   ", ViInt32 ),
-				("offset          ", ViReal64),
-				("gain            ", ViReal64),
-				("reserved1       ", ViReal64),
-				("reserved2       ", ViReal64)]
+				("xIncrement", ViReal64),
+				("actualSamples", ViInt32 ),
+				("offset", ViReal64),
+				("gain", ViReal64),
+				("reserved1", ViReal64),
+				("reserved2", ViReal64)]
 
 
 #d#efine _VI_FUNC            __stdcall

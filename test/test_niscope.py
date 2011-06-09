@@ -35,4 +35,11 @@ class test_niscope:
 		import numpy
 		data = numpy.zeros((1000,4),dtype=numpy.float64)
 		self.scope.Fetch("0,1",data)
+		for info in self.scope.info:
+			print "relativeInitialX=",info.relativeInitialX
+			print "absoluteInitialX",info.absoluteInitialX
+			print "xIncrement",info.xIncrement
+			print "actualSamples",info.actualSamples
+			print "gain",info.gain
+			print "offset",info.offset
 		del data

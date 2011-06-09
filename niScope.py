@@ -267,11 +267,13 @@ class Scope(ViSession):
 			numpy.int16	:'Binary16' ,
 			numpy.int32 	:'Binary32' }[data.dtype.type]
 
-		numChan = len(channelList.split(","))
 		numSamples = data.shape[0]
 		numRec = data.shape[1]
-
-		wfmInfoArray = wfmInfo*numRec
+		numWfms = self.ActualNumWfms(channelList)
+		recLength = self.ActualRecordLength
+		assert recLength == numSamples
+		assert numWfms == numRec
+		wfmInfoArray = wfmInfo*numWfms
 		self.info = wfmInfoArray()
         
 		status = self.CALL("Fetch"+data_type,self,
@@ -283,6 +285,7 @@ class Scope(ViSession):
 			)
 		return data
 
+	@property
 	def ActualRecordLength(self):
 		"""
 		Returns the actual number of points the digitizer acquires for
@@ -298,6 +301,14 @@ class Scope(ViSession):
 		record = ViInt32()
 		self.CALL("ActualRecordLength",self,byref(record))
 		return record.value
+
+	def ActualNumWfms(self,channelList = "0"):
+		chan = ViConstString(channelList)
+		numWfms = ViInt32()
+		self.CALL("ActualNumWfms",self,chan,byref(numWfms))
+		return numWfms.value
+		
+
 		
 	def TranferDataTo(self,data,channel_list = "0",timeout=1):
 		"""
