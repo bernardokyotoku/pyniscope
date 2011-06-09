@@ -69,6 +69,14 @@ class Scope(ViSession):
 		status = self.CALL("AutoSetup",self)
 		return status
 
+	def ConfigureAcquisition(self,acqType=VAL.NORMAL):
+		"""
+		Configures how the digitizer acquires data and fills the wave-
+		form record.
+		"""
+		acquisitionType = ViInt32(acqType)
+		status = self.CALL("ConfigureAcquisition",self,acquisitionType)
+
 	def ConfigureHorizontalTiming(self,
 			sampleRate	= 20000000,
 			numPts		= 1000,
@@ -396,4 +404,3 @@ class Scope(ViSession):
 	def error_message (self,errorCode):
 		IVI_MAX_MESSAGE_LEN      = 255
 		IVI_MAX_MESSAGE_BUF_SIZE = IVI_MAX_MESSAGE_LEN + 1
-		errorMessage = create_string_buffer(IVI_MAX_MESSAGE_BUF_SIZE)
