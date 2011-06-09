@@ -4,7 +4,7 @@ import os
 import sys
 import textwrap
 import numpy 
-from numpy import ctypeslib
+from numpy import ctypeslib,zeros,float64
 from ctypes import create_string_buffer,byref,util
 import ctypes
 import ctypes.util
@@ -258,22 +258,22 @@ class Scope(ViSession):
 	
 	def Fetch(self	                   ,
 		channelList  = "0"             ,
-		timeout      = 1	      	   ,
-		numSamples   = 1000        	   ,
-		dtype		 =	numpy.float64  ,
-		fill_mode	 = 'group_by_scan_number'):
+		data = zeros((1000,1),dtype=float64),
+		timeout      = 1	      	   ,):
 		
 		data_type = {
 			numpy.float64 	:''	        ,
 			numpy.int8  	:'Binary8'  ,
 			numpy.int16	:'Binary16' ,
-			numpy.int32 	:'Binary32' }[dtype]
+			numpy.int32 	:'Binary32' }[data.dtype.type]
+
+		numChan = len(channelList.split(","))
+		numSamples = data.shape[0]
+		numRec = data.shape[1]
+
+		wfmInfoArray = wfmInfo*numRec
+		self.info = wfmInfoArray()
         
-		if fill_mode=='group_by_scan_number':
-			data = numpy.zeros((numSamples,1),dtype=numpy.float64)
-		else:
-			data = numpy.zeros((1,numSamples),dtype=numpy.float64)
-			
 		status = self.CALL("Fetch"+data_type,self,
 			ViConstString(channelList),
 			ViReal64(timeout),
