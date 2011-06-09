@@ -56,6 +56,19 @@ class Scope(ViSession):
 				byref(self))
 		return None
 
+	def AutoSetup(self):
+		"""
+		Automatically configures the instrument. When you call this 
+		function, the digitizer senses the input signal and automati-
+		cally configures many of the instrument settings. If no signal 
+		is found on any analog input channel, a warning is returned, and
+		all channels are enabled. A channel is considered to have a 
+		signal present if the signal is at least 10% of the smallest 
+		vertical range available for that channel. 
+		"""
+		status = self.CALL("AutoSetup",self)
+		return status
+
 	def ConfigureHorizontalTiming(self,
 			sampleRate	= 20000000,
 			numPts		= 1000,
