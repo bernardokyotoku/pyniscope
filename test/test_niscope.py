@@ -43,3 +43,6 @@ class test_niscope:
 			print "gain",info.gain
 			print "offset",info.offset
 		del data
+
+	def test_autosetup(self):	
+		self.scope.AutoSetup()
