@@ -91,6 +91,16 @@ class Scope(ViSession):
 				ViBoolean(enforceRealtime))
 		return 
 		
+	def ConfigureChanCharacteristics(self,chanList,impedance,maxFrequency):
+		"""
+		Configures the attributes that control the electrical character-
+		istics of the channel the input impedance and the bandwidth.
+		"""
+		status = self.CALL("ConfigureChanCharacteristics",self,
+				ViConstString(chanList),
+				ViReal64(impedance),
+				ViReal64(maxFrequency))
+		return status
 		
 	def ConfigureVertical(self,
 		channelList="0",

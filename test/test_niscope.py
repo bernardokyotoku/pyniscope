@@ -49,3 +49,6 @@ class test_niscope:
 
 	def test_configure_acquisition(self):
 		self.scope.ConfigureAcquisition()
+
+	def test_configure_chan_characteristics(self):
+		self.scope.ConfigureChanCharacteristics("0",1000000,20)
