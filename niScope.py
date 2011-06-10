@@ -337,21 +337,51 @@ class Scope(ViSession):
 		return var.value
 
 	def SetAttribute(self, channelList, attribute, value):
-		attrType = { 	'float':ViReal64,
-				'int':ViInt32,
-				'bool':ViBoolean,
-				'Scope':ViSession,
-				'string':ViString,
-				} [type(value).__name__]
-		self.CALL("SetAttribute"+type(attrType).__name__,self,
+		"""
+		Sets the value an attribute. This is a low-level function that 
+		you can use to set the values of instrument-specific attributes 
+		and inherent IVI attributes. If the attribute represents an 
+		instrument state, this function performs instrument I/O in the 
+		following cases:
+
+		State caching is disabled for the entire session or for the par-
+		ticular attribute.
+		State caching is enabled and the currently cached value is inva
+		lid or is different than the value you specify.
+		"""
+		attrType = { 	float:ViReal64,
+				int:ViInt32,
+				bool:ViBoolean,
+				Scope:ViSession,
+				str:ViString,
+				} [type(value)]
+		status = self.CALL("SetAttribute"+type(attrType).__name__,self,
 				ViConstString(channelList),
 				ViAttr(attributeID),
 				attrType(value))
+		return status.value
 
-	def Fetch(self	                   ,
-		channelList  = "0"             ,
-		data = zeros((1000,1),dtype=float64),
-		timeout      = 1	      	   ,):
+	def CheckAttribute(self, channelList, attribute, value):
+		"""
+		Verifies the validity of a value you specify for an attribute.
+		"""
+		attrType = { 	float:ViReal64,
+				int:ViInt32,
+				bool:ViBoolean,
+				Scope:ViSession,
+				str:ViString,
+				} [type(value)]
+		status = self.CALL("CheckAttribute"+type(attrType).__name__,
+				self,
+				ViConstString(channelList),
+				ViAttr(attributeID),
+				attrType(value))
+		return status.value
+
+	def Fetch(self,
+		channelList="0",
+		data=zeros((1000,1),dtype=float64),
+		timeout=1,):
 		"""
 		Returns the waveform from a previously initiated acquisition 
 		that the digitizer acquires for the specified channel. 
