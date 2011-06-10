@@ -83,6 +83,10 @@ class Scope(ViSession):
 			refPositioin	= 0.5,
 			numRecords	= 1,
 			enforceRealtime	= True):
+		"""
+		Configures the common properties of the horizontal subsystem for
+		a multirecord acquisition in terms of minimum sample rate.
+		"""
 		status = self.CALL('ConfigureHorizontalTiming',self,
 				ViReal64(sampleRate),
 				ViInt32(numPts),
@@ -276,23 +280,50 @@ class Scope(ViSession):
 		status = self.CALL("ConfigureTrigger"+trigger_type,self,*args)
 		
 	def InitiateAcquisition(self):
+		"""
+		Initiates a waveform acquisition.
+
+		After calling this function, the digitizer leaves the Idle state
+		and waits for a trigger. The digitizer acquires a waveform for 
+		each channel you enable with ConfigureVertical.
+		"""
 		status = self.CALL("InitiateAcquisition",self)
 		
 	def Abort(self):
+		"""
+		Aborts an acquisition and returns the digitizer to the Idle 
+		state. Call this function if the digitizer times out waiting for
+		a trigger.
+		"""
 		status = self.CALL("Abort",self)
+		return status
 		
 	def AcquisitionStatus(self):
+		"""
+		Returns status information about the acquisition to the status 
+		output parameter.
+		"""
 		status = self.CALL("AcquisitionStatus",self,
 			byref(ViInt32(acq_status)))
 		return acq_status.value
 		
 	def Commit(self):
+		"""
+		Commits to hardware all the parameter settings associated with 
+		the task. Use this function if you want a parameter change to be
+		immediately reflected in the hardware. This function is support-
+		ed for the NI 5122/5124 only.
+		"""
 		status = self.CALL("Commit",self)
 	
 	def Fetch(self	                   ,
 		channelList  = "0"             ,
 		data = zeros((1000,1),dtype=float64),
 		timeout      = 1	      	   ,):
+		"""
+		Returns the waveform from a previously initiated acquisition 
+		that the digitizer acquires for the specified channel. 
+		"""
 		
 		data_type = {
 			numpy.float64 	:''	        ,
@@ -336,41 +367,15 @@ class Scope(ViSession):
 		return record.value
 
 	def ActualNumWfms(self,channelList = "0"):
+		"""
+		Helps you to declare appropriately sized waveforms. NI-SCOPE 
+		handles the channel list parsing for you.
+		"""
 		chan = ViConstString(channelList)
 		numWfms = ViInt32()
 		self.CALL("ActualNumWfms",self,chan,byref(numWfms))
 		return numWfms.value
 		
-
-		
-	def TranferDataTo(self,data,channel_list = "0",timeout=1):
-		"""
-		Parameters	
-		
-		channel_list	The channel you will acquire data from; it may 
-				be a single channel, such as "0" or "1", or a
-				list of channels such as "0,1".
-		
-		timeout 	The time to wait in seconds for data to be 
-				acquired; using 0 for this parameter tells 
-				NI-SCOPE to fetch whatever is currently 
-				available.
-		"""
-		data_type = {
-			'float64':''	    ,
-			'int8'   :'Binary8' ,
-			'int16'  :'Binary16',
-			'int32'  :'Binary32' }[data.dtype.__str__()]	
-		numSamples = max(data.shape)
-		self.CALL("Fetch"+data_type,self,
-			ViConstString(channel_list),
-			ViReal64(timeout),
-			ViInt32(numSamples),
-			data.ctypes.data,#_as(ctypes.POINTER(ViReal64)),
-			byref(self.info)
-			)
-			
-	
 	def read(self):
 		self.ConfigureHorizontalTiming()
 		self.ConfigureVertical()
@@ -381,23 +386,11 @@ class Scope(ViSession):
 		return data
 	
 	def close(self):
+		"""
+		When you are finished using an instrument driver session, you 
+		must call this function to perform the following actions:
+		"""
 		status = self.CALL("close",self)
-
-# not implemented
-#ViStatus _VI_FUNC niScope_FetchComplex ( ViSession vi,
-#                                         ViConstString channelList,
-#                                         ViReal64 timeout,
-#                                         ViInt32 numSamples,
-#                                         NIComplexNumber* wfm,
-#                                         struct niScope_wfmInfo* wfmInfo);
-#
-#										 
-# ViStatus _VI_FUNC niScope_FetchComplexBinary16 ( ViSession vi,
-                                                 # ViConstString channelList,
-                                                 # ViReal64 timeout,
-                                                 # ViInt32 numSamples,
-                                                 # NIComplexI16* wfm,
-                                                 # struct niScope_wfmInfo* wfmInfo);
 
 	def errorHandler (self,errorCode):
 		MAX_FUNCTION_NAME_SIZE 	 = 55
