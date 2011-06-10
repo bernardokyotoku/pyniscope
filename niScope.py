@@ -315,7 +315,39 @@ class Scope(ViSession):
 		ed for the NI 5122/5124 only.
 		"""
 		status = self.CALL("Commit",self)
-	
+
+	def GetAttribute(self, channelList, attribute, attrType):
+		"""
+		Queries the value of a ViBoolean attribute. You can use this 
+		function to get the values of instrument-specific attributes and
+		inherent IVI attributes. If the attribute represents an instru-
+		ment state, this function performs instrument I/O in the follow-
+		ing cases:
+
+		State caching is disabled for the entire session or for the par-
+		ticular attribute.
+		State caching is enabled and the currently cached value is inva-
+		lid.
+		"""
+		var = attrType()
+		self.CALL("GetAttribute"+type(attrType).__name__,self,
+				ViConstString(channelList),
+				ViAttr(attributeID),
+				byref(var))
+		return var.value
+
+	def SetAttribute(self, channelList, attribute, value):
+		attrType = { 	'float':ViReal64,
+				'int':ViInt32,
+				'bool':ViBoolean,
+				'Scope':ViSession,
+				'string':ViString,
+				} [type(value).__name__]
+		self.CALL("SetAttribute"+type(attrType).__name__,self,
+				ViConstString(channelList),
+				ViAttr(attributeID),
+				attrType(value))
+
 	def Fetch(self	                   ,
 		channelList  = "0"             ,
 		data = zeros((1000,1),dtype=float64),

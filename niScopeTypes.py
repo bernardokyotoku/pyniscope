@@ -1,16 +1,16 @@
 import ctypes
 
-ViSession = ctypes.c_ulong 		# long unsigned int
-ViBoolean = ctypes.c_ushort		# short unsigned int
-ViRsrc = ctypes.c_char_p 		# char*
-ViReal64 = ctypes.c_double		# double
-ViInt32 = ctypes.c_long			# long int
-ViStatus = ctypes.c_long		# long int
-ViConstString = ctypes.c_char_p	# const char*
-ViInt8 =  ctypes.c_char  		#     Binary8 					signed char
-ViInt16 = ctypes.c_int  		#Binary16     short int
-ViInt32 = ctypes.c_long 		#Binary32 long int
-ViChar = ctypes.POINTER(ViConstString)
+class ViSession(ctypes.c_ulong):pass 		# long unsigned int
+class ViBoolean(ctypes.c_ushort):pass		# short unsigned int
+class ViRsrc(ctypes.c_char_p):pass 		# char*
+class ViReal64(ctypes.c_double):pass		# double
+class ViInt32(ctypes.c_long):pass			# long int
+class ViStatus(ctypes.c_long):pass		# long int
+class ViConstString(ctypes.c_char_p):pass	# const char*
+class ViInt8(ctypes.c_char):pass  		# Binary8 signed char
+class ViInt16(ctypes.c_int):pass  		#Binary16     short int
+class ViInt32(ctypes.c_long):pass 		#Binary32 long int
+class ViChar(ctypes.POINTER(ViConstString)):pass
 
 
 class wfmInfo(ctypes.Structure):
