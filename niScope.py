@@ -408,4 +408,4 @@ class Scope(ViSession):
 	
 	def error_message (self,errorCode):
 		IVI_MAX_MESSAGE_LEN      = 255
-		IVI_MAX_MESSAGE_BUF_SIZE = IVI_MAX_MESSAGE_LEN + 1
+
