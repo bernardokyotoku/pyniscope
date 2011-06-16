@@ -4,14 +4,14 @@ class ViSession(ctypes.c_ulong):pass 		# long unsigned int
 class ViBoolean(ctypes.c_ushort):pass		# short unsigned int
 class ViRsrc(ctypes.c_char_p):pass 		# char*
 class ViReal64(ctypes.c_double):pass		# double
-class ViInt32(ctypes.c_long):pass			# long int
 class ViStatus(ctypes.c_long):pass		# long int
 class ViConstString(ctypes.c_char_p):pass	# const char*
+class ViString(ctypes.c_char_p):pass	# const char*
 class ViInt8(ctypes.c_char):pass  		# Binary8 signed char
 class ViInt16(ctypes.c_int):pass  		#Binary16     short int
-class ViInt32(ctypes.c_long):pass 		#Binary32 long int
+class ViInt32(ctypes.c_int):pass 		#Binary32 long int
 class ViChar(ctypes.POINTER(ViConstString)):pass
-
+class ViAttr(ctypes.c_int):pass 		#Binary32 long int
 
 class wfmInfo(ctypes.Structure):
 	_fields_ = [("absoluteInitialX", ViReal64),

@@ -1,5 +1,6 @@
 __all__ = []
 
+from ordered_symbols import *
 import os
 import sys
 import textwrap
@@ -10,6 +11,7 @@ import ctypes
 import ctypes.util
 import warnings
 from niScopeTypes import *
+from niScopeTypes import ViInt32
 
 
 libname = 'niScope_32'
@@ -330,9 +332,10 @@ class Scope(ViSession):
 		lid.
 		"""
 		var = attrType()
-		self.CALL("GetAttribute"+type(attrType).__name__,self,
+		self.CALL("GetAttribute"+attrType.__name__,
+				self,
 				ViConstString(channelList),
-				ViAttr(attributeID),
+				ViAttr(attribute),
 				byref(var))
 		return var.value
 
@@ -351,15 +354,17 @@ class Scope(ViSession):
 		"""
 		attrType = { 	float:ViReal64,
 				int:ViInt32,
+				long:ViInt32,
 				bool:ViBoolean,
 				Scope:ViSession,
 				str:ViString,
 				} [type(value)]
-		status = self.CALL("SetAttribute"+type(attrType).__name__,self,
+		status = self.CALL("SetAttribute"+attrType.__name__,
+				self,
 				ViConstString(channelList),
-				ViAttr(attributeID),
+				ViAttr(attribute),
 				attrType(value))
-		return status.value
+		return status
 
 	def CheckAttribute(self, channelList, attribute, value):
 		"""
@@ -367,16 +372,17 @@ class Scope(ViSession):
 		"""
 		attrType = { 	float:ViReal64,
 				int:ViInt32,
+				long:ViInt32,
 				bool:ViBoolean,
 				Scope:ViSession,
 				str:ViString,
 				} [type(value)]
-		status = self.CALL("CheckAttribute"+type(attrType).__name__,
+		status = self.CALL("CheckAttribute"+attrType.__name__,
 				self,
 				ViConstString(channelList),
-				ViAttr(attributeID),
+				ViAttr(attribute),
 				attrType(value))
-		return status.value
+		return status
 
 	def Fetch(self,
 		channelList="0",

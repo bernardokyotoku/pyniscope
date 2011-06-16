@@ -1,6 +1,6 @@
+import niScope
 class test_niscope:
 	def setUp(self):
-		import niScope
 		self.scope = niScope.Scope()
 		
 	def tearDown(self):
@@ -54,6 +54,17 @@ class test_niscope:
 		self.scope.ConfigureChanCharacteristics("0",1000000,20)
 	
 	def test_set_attribute(self):
-		self.scope.SetAttribute("0",
-				ATTR.ACQUISITION_TYPE,
+		self.scope.SetAttribute("",
+				niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
+				niScope.VAL.NORMAL)
+
+	def test_get_attribute(self):
+		value = self.scope.GetAttribute("",
+				niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
+				niScope.ViInt32)
+		assert value == niScope.VAL.NORMAL
+
+	def test_check_attribute(self):
+		self.scope.CheckAttribute("",
+				niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
 				niScope.VAL.NORMAL)
