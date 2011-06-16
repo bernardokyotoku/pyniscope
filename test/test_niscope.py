@@ -52,3 +52,8 @@ class test_niscope:
 
 	def test_configure_chan_characteristics(self):
 		self.scope.ConfigureChanCharacteristics("0",1000000,20)
+	
+	def test_set_attribute(self):
+		self.scope.SetAttribute("0",
+				ATTR.ACQUISITION_TYPE,
+				niScope.VAL.NORMAL)
