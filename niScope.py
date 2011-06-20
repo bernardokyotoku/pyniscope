@@ -386,11 +386,13 @@ class Scope(ViSession):
 
 	def Fetch(self,
 		channelList="0",
-		data=zeros((1000,1),dtype=float64),
+		data=zeros((1000,1),order="F",dtype=float64),
 		timeout=1,):
 		"""
 		Returns the waveform from a previously initiated acquisition 
 		that the digitizer acquires for the specified channel. 
+		
+		numpy array needs to be Fortran ordered.
 		"""
 		
 		data_type = {
