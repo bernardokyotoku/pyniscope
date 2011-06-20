@@ -82,7 +82,7 @@ class Scope(ViSession):
 	def ConfigureHorizontalTiming(self,
 			sampleRate	= 20000000,
 			numPts		= 1000,
-			refPositioin	= 0.5,
+			refPosition	= 0.5,
 			numRecords	= 1,
 			enforceRealtime	= True):
 		"""
