@@ -92,7 +92,7 @@ class Scope(ViSession):
 		status = self.CALL('ConfigureHorizontalTiming',self,
 				ViReal64(sampleRate),
 				ViInt32(numPts),
-				ViReal64(refPositioin),
+				ViReal64(refPosition),
 				ViInt32(numRecords),
 				ViBoolean(enforceRealtime))
 		return 
