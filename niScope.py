@@ -129,7 +129,7 @@ class Scope(ViSession):
 			ViBoolean(enabled))
 		return status
 	
-	def ConfigureTrigger(self,trigger_type='Immediate',*settings):
+	def ConfigureTrigger(self,trigger_type='Immediate',**settings):
 		"""
 		Configures scope trigger type and settings. For each trigger 
 		type distinct settings must be defined.
@@ -278,7 +278,7 @@ class Scope(ViSession):
 			ViReal64 		(holdoff		),	
 			ViReal64 		(delay			)
 			),
-		}[trigger_type](*settings)
+		}[trigger_type](**settings)
 		status = self.CALL("ConfigureTrigger"+trigger_type,self,*args)
 		
 	def InitiateAcquisition(self):
@@ -405,7 +405,6 @@ class Scope(ViSession):
 		numRec = data.shape[1]
 		numWfms = self.ActualNumWfms(channelList)
 		recLength = self.ActualRecordLength
-		assert recLength == numSamples
 		assert numWfms == numRec
 		wfmInfoArray = wfmInfo*numWfms
 		self.info = wfmInfoArray()
