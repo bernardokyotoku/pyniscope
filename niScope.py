@@ -280,6 +280,32 @@ class Scope(ViSession):
 			),
 		}[trigger_type](**settings)
 		status = self.CALL("ConfigureTrigger"+trigger_type,self,*args)
+
+	def ExportSignal(self,signal=NISCOPE_VAL_REF_TRIGGER
+			,outputTerminal=NISCOPE_VAL_RTSI_0
+			,signalIdentifier=""):
+		"""
+Configures the digitizer to generate a signal that other devices can detect when
+configured for digital triggering or sharing clocks. The signal parameter speci-
+fies what condition causes the digitizer to generate the signal. The 
+outputTerminal parameter specifies where to send the signal on the hardware 
+(such as a PFI connector or RTSI line).
+
+In cases where multiple instances of a particular signal exist, use the 
+signalIdentifier input to specify which instance to control. For normal signals,
+only one instance exists and you should leave this parameter set to the empty 
+string. You can call this function multiple times and set each available line to
+a different signal.
+
+To unprogram a specific line on device, call this function with the signal you 
+no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
+		"""
+
+		status = self.CALL("ExportSignal",self,
+				ViInt32(signal),
+				ViConstString(signalIdentifier),
+				ViConstString(outputTerminal))
+		return status
 		
 	def InitiateAcquisition(self):
 		"""
@@ -318,9 +344,9 @@ class Scope(ViSession):
 		"""
 		status = self.CALL("Commit",self)
 
-	def GetAttribute(self, channelList, attribute, attrType):
+	def GetAttribute(self, attribute, attrType, channelList=""):
 		"""
-		Queries the value of a ViBoolean attribute. You can use this 
+		Queries the value of an attribute. You can use this 
 		function to get the values of instrument-specific attributes and
 		inherent IVI attributes. If the attribute represents an instru-
 		ment state, this function performs instrument I/O in the follow-
@@ -444,7 +470,10 @@ class Scope(ViSession):
 		numWfms = ViInt32()
 		self.CALL("ActualNumWfms",self,chan,byref(numWfms))
 		return numWfms.value
-		
+
+	def ActualSamplingRate(self):
+		return self.GetAttribute(NISCOPE_ATTR_HORZ_SAMPLE_RATE,ViReal64)
+
 	def read(self):
 		self.ConfigureHorizontalTiming()
 		self.ConfigureVertical()

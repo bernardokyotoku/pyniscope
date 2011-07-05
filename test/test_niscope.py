@@ -1,7 +1,7 @@
 import niScope
 class test_niscope:
 	def setUp(self):
-		self.scope = niScope.Scope()
+		self.scope = niScope.Scope("Dev4")
 		
 	def tearDown(self):
 		self.scope.close()
@@ -59,7 +59,7 @@ class test_niscope:
 				niScope.VAL.NORMAL)
 
 	def test_get_attribute(self):
-		value = self.scope.GetAttribute("",
+		value = self.scope.GetAttribute(
 				niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
 				niScope.ViInt32)
 		assert value == niScope.VAL.NORMAL
@@ -68,3 +68,10 @@ class test_niscope:
 		self.scope.CheckAttribute("",
 				niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
 				niScope.VAL.NORMAL)
+
+	def test_ActualSamplingRate(self):
+		self.scope.ConfigureHorizontalTiming()
+		self.scope.ActualSamplingRate()
+
+	def test_ExportSignal(self):
+		assert self.scope.ExportSignal() == 0
