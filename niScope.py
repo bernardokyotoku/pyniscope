@@ -471,6 +471,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 		self.CALL("ActualNumWfms",self,chan,byref(numWfms))
 		return numWfms.value
 
+	@property
 	def ActualSamplingRate(self):
 		return self.GetAttribute(NISCOPE_ATTR_HORZ_SAMPLE_RATE,ViReal64)
 
