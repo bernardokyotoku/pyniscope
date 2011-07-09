@@ -331,9 +331,10 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 		Returns status information about the acquisition to the status 
 		output parameter.
 		"""
+		acq_status = ViInt32()
 		status = self.CALL("AcquisitionStatus",self,
-			byref(ViInt32(acq_status)))
-		return status.value
+			byref(acq_status))
+		return acq_status.value
 		
 	def Commit(self):
 		"""

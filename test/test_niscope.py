@@ -73,6 +73,9 @@ class test_niscope:
 		self.scope.ConfigureHorizontalTiming()
 		self.scope.ActualSamplingRate
 
+	def test_AcquistionStatus(self):
+		assert self.scope.AcquisitionStatus() == 1
+
 	def test_ExportSignal(self):
 		assert self.scope.ExportSignal() == 0
 
