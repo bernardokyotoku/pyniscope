@@ -365,7 +365,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 				byref(var))
 		return var.value
 
-	def SetAttribute(self, channelList, attribute, value):
+	def SetAttribute(self, attribute, value, channelList=""):
 		"""
 		Sets the value an attribute. This is a low-level function that 
 		you can use to set the values of instrument-specific attributes 
@@ -443,6 +443,25 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 			byref(self.info)
 			)
 		return data
+
+	@property
+	def AllowMoreRecordsThanMemory(self):
+		return self.SetAttribute(
+				NISCOPE_ATTR_ALLOW_MORE_RECORDS_THAN_MEMORY,
+				bool)
+	
+	@AllowMoreRecordsThanMemory.setter
+	def AllowMoreRecordsThanMemory(self,value):
+		self.SetAttribute(NISCOPE_ATTR_ALLOW_MORE_RECORDS_THAN_MEMORY,
+				bool(value))
+
+	@property
+	def NumRecords(self):
+		return self.GetAttribute(NISCOPE_ATTR_HORZ_NUM_RECORDS, ViInt32)
+
+	@NumRecords.setter
+	def NumRecords(self,value):
+		self.SetAttribute(NISCOPE_ATTR_HORZ_NUM_RECORDS, int(value))
 
 	@property
 	def ActualRecordLength(self):

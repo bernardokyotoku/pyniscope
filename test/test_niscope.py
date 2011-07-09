@@ -54,9 +54,9 @@ class test_niscope:
 		self.scope.ConfigureChanCharacteristics("0",1000000,20)
 	
 	def test_set_attribute(self):
-		self.scope.SetAttribute("",
+		self.scope.SetAttribute(
 				niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
-				niScope.VAL.NORMAL)
+				niScope.VAL.NORMAL,"")
 
 	def test_get_attribute(self):
 		value = self.scope.GetAttribute(
@@ -71,7 +71,16 @@ class test_niscope:
 
 	def test_ActualSamplingRate(self):
 		self.scope.ConfigureHorizontalTiming()
-		self.scope.ActualSamplingRate()
+		self.scope.ActualSamplingRate
 
 	def test_ExportSignal(self):
 		assert self.scope.ExportSignal() == 0
+
+	def test_NumRecords_getter(self):
+		self.scope.ConfigureHorizontalTiming(numRecords	= 2)
+		assert self.scope.NumRecords == 2
+
+	def test_NumRecords_setter(self):
+		self.scope.ConfigureHorizontalTiming(numRecords	= 2)
+		self.scope.NumRecords = 3
+		assert self.scope.NumRecords == 3
