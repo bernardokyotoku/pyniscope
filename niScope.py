@@ -333,7 +333,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 		"""
 		status = self.CALL("AcquisitionStatus",self,
 			byref(ViInt32(acq_status)))
-		return acq_status.value
+		return status.value
 		
 	def Commit(self):
 		"""
