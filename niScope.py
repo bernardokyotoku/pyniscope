@@ -457,6 +457,11 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 
 	@property
 	def NumRecords(self):
+		"""
+Specifies the number of records to acquire. Can be used for multirecord acquisi-
+tions and single record acquisitions. Setting this attribute to 1 indicates a 
+single record acquisition.
+		"""
 		return self.GetAttribute(NISCOPE_ATTR_HORZ_NUM_RECORDS, ViInt32)
 
 	@NumRecords.setter
