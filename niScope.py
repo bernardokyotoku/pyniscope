@@ -89,6 +89,7 @@ class Scope(ViSession):
 		Configures the common properties of the horizontal subsystem for
 		a multirecord acquisition in terms of minimum sample rate.
 		"""
+		self.RecordLength = numPts
 		status = self.CALL('ConfigureHorizontalTiming',self,
 				ViReal64(sampleRate),
 				ViInt32(numPts),
@@ -316,6 +317,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 		each channel you enable with ConfigureVertical.
 		"""
 		status = self.CALL("InitiateAcquisition",self)
+		return Acquisition()
 		
 	def Abort(self):
 		"""
@@ -411,43 +413,73 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 				attrType(value))
 		return status
 
-	def Fetch(self,
-		channelList="0",
-		data=zeros((1000,1),order="F",dtype=float64),
-		timeout=1,):
+	def Fetch(self, channelList="0", buffer = None, timeout=1,):
 		"""
 		Returns the waveform from a previously initiated acquisition 
 		that the digitizer acquires for the specified channel. 
 		
 		numpy array needs to be Fortran ordered.
 		"""
-		
+		numAcquiredWaveforms = self.ActualNumWfms(channelList)
+		numberOfChannels = len(','.split(channelList))
+		if buffer is None:
+			buffer = zeros((self.RecordLength,
+				numberOfChannels*numAcquiredWaveforms)
+					,order="F"
+					,dtype=float64),	
+		else:	
+			samplesPerRecord = buffer.shape[0]
+			numberOfRecords = buffer.shape[1]
+			if numberOfRecords < numAcquiredWaferms*numberOfChannels:
+				self.FetchNumberRecords = numberOfRecords/numberOfChannels
+			assert numAcquiredWaveforms == numberOfRecords
+			assert self.RecordLength >= samplesPerRecord
+			
 		data_type = {
 			numpy.float64 	:''	        ,
 			numpy.int8  	:'Binary8'  ,
 			numpy.int16	:'Binary16' ,
-			numpy.int32 	:'Binary32' }[data.dtype.type]
+			numpy.int32 	:'Binary32' }[buffer.dtype.type]
 
-		numSamples = data.shape[0]
-		numRec = data.shape[1]
-		numWfms = self.ActualNumWfms(channelList)
-		recLength = self.ActualRecordLength
-		assert numWfms == numRec
-		wfmInfoArray = wfmInfo*numWfms
+		wfmInfoArray = wfmInfo*numAcquiredWaveforms
 		self.info = wfmInfoArray()
         
 		status = self.CALL("Fetch"+data_type,self,
 			ViConstString(channelList),
 			ViReal64(timeout),
-			ViInt32(numSamples),
-			data.ctypes.data,
+			ViInt32(samplesPerRecord),
+			buffer.ctypes.data,
 			byref(self.info)
 			)
-		return data
+		return buffer
+
+	@property
+	def FetchRecordNumber(self):
+		return self.GetAttribute(
+				NISCOPE_ATTR_FETCH_RECORD_NUMBER,
+				int)
+
+	@FetchRecordNumber.setter		
+	def FetchRecordNumber(self,value):
+		return self.SetAttribute(
+				NISCOPE_ATTR_FETCH_RECORD_NUMBER,
+				int(value))
+
+	@property
+	def FetchNumberRecords(self):
+		return self.GetAttribute(
+				NISCOPE_ATTR_FETCH_NUM_RECORDS,
+				int)
+
+	@FetchNumberRecords.setter		
+	def FetchNumberRecords(self,value):
+		return self.SetAttribute(
+				NISCOPE_ATTR_FETCH_NUM_RECORDS,
+				int(value))
 
 	@property
 	def AllowMoreRecordsThanMemory(self):
-		return self.SetAttribute(
+		return self.GetAttribute(
 				NISCOPE_ATTR_ALLOW_MORE_RECORDS_THAN_MEMORY,
 				bool)
 	
@@ -533,3 +565,12 @@ single record acquisition.
 	def error_message (self,errorCode):
 		IVI_MAX_MESSAGE_LEN      = 255
 
+class Acquisition:
+	def __iter__(self):
+		class iterator:
+			def __iter__(self):
+				pass
+
+			def next(self):
+				
+				return self.scope.Fetch()
