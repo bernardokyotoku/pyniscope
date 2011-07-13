@@ -13,7 +13,6 @@ import warnings
 from niScopeTypes import *
 from niScopeTypes import ViInt32
 
-
 libname = 'niScope_32'
 #    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niScope.h'
 lib = util.find_library(libname)
