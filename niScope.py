@@ -13,6 +13,7 @@ import warnings
 from niScopeTypes import *
 from niScopeTypes import ViInt32
 
+
 libname = 'niScope_32'
 #    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niScope.h'
 lib = util.find_library(libname)
@@ -412,7 +413,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 				attrType(value))
 		return status
 
-	def Fetch(self, channelList="0", buffer = None, timeout=1,):
+	def Fetch(self, channelList="0", buf = None, timeout=1,):
 		"""
 		Returns the waveform from a previously initiated acquisition 
 		that the digitizer acquires for the specified channel. 
@@ -421,15 +422,16 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 		"""
 		numAcquiredWaveforms = self.ActualNumWfms(channelList)
 		numberOfChannels = len(','.split(channelList))
-		if buffer is None:
-			buffer = zeros((self.RecordLength,
-				numberOfChannels*numAcquiredWaveforms)
-					,order="F"
-					,dtype=float64),	
+		if buf is None:
+			buf = zeros([self.RecordLength,
+				numberOfChannels*numAcquiredWaveforms],order="F"
+					,dtype=numpy.float64)	
+			samplesPerRecord = buf.shape[0]
+			numberOfRecords = buf.shape[1]
 		else:	
-			samplesPerRecord = buffer.shape[0]
-			numberOfRecords = buffer.shape[1]
-			if numberOfRecords < numAcquiredWaferms*numberOfChannels:
+			samplesPerRecord = buf.shape[0]
+			numberOfRecords = buf.shape[1]
+			if numberOfRecords < numAcquiredWaveforms*numberOfChannels:
 				self.FetchNumberRecords = numberOfRecords/numberOfChannels
 			assert numAcquiredWaveforms == numberOfRecords
 			assert self.RecordLength >= samplesPerRecord
@@ -438,7 +440,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 			numpy.float64 	:''	        ,
 			numpy.int8  	:'Binary8'  ,
 			numpy.int16	:'Binary16' ,
-			numpy.int32 	:'Binary32' }[buffer.dtype.type]
+			numpy.int32 	:'Binary32' }[buf.dtype.type]
 
 		wfmInfoArray = wfmInfo*numAcquiredWaveforms
 		self.info = wfmInfoArray()
@@ -447,10 +449,10 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 			ViConstString(channelList),
 			ViReal64(timeout),
 			ViInt32(samplesPerRecord),
-			buffer.ctypes.data,
+			buf.ctypes.data,
 			byref(self.info)
 			)
-		return buffer
+		return buf
 
 	@property
 	def FetchRecordNumber(self):
