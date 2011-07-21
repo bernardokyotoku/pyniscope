@@ -435,6 +435,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
 				self.FetchNumberRecords = numberOfRecords/numberOfChannels
 			assert numAcquiredWaveforms == numberOfRecords
 			assert self.RecordLength >= samplesPerRecord
+		print samplesPerRecord
 			
 		data_type = {
 			numpy.float64 	:''	        ,
