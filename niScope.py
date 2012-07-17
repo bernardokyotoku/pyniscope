@@ -20,8 +20,10 @@ lib = util.find_library(libname)
 if lib is None:
 	if os.name=='posix':
 		print 'libniScope_32.so not found, is NI-SCOPE installed?'
+        raise ImportError
 	if os.name=='nt':
 		print 'niScope.dll not found'
+        raise ImportError
 if os.name=='posix':
 	libniScope = ctypes.cdll.LoadLibrary(lib)
 if os.name=='nt':
