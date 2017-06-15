@@ -14,9 +14,13 @@ from niScopeTypes import *
 from niScopeTypes import ViInt32
 
 
-libname = 'niScope_32'
+
 #    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niScope.h'
-lib = util.find_library(libname)
+libnames = ['niScope_32', 'niScope_64']
+lib = Null
+for libname in libnames:
+	if lib is Null:
+		lib = util.find_library(libname)
 if lib is None:
 	if os.name=='posix':
 		print 'libniScope_32.so not found, is NI-SCOPE installed?'
