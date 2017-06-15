@@ -1,3 +1,4 @@
+from builtins import input
 import niScope
 from nidaqmx import AnalogOutputTask
 import numpy as np
@@ -12,8 +13,8 @@ scope.ConfigureHorizontalTiming(sampleRate=30000, numPts=1000000)
 scope.ConfigureVertical()
 scope.ConfigureTrigger("Edge")
 scope.ExportSignal(signal=4, outputTerminal='VAL_RTSI_0')
-raw_input("signal exported")
+input("signal exported")
 scope.Commit()
-raw_input("committed")
+input("committed")
 scope.InitiateAcquisition()
-raw_input("Acquisition initiated")
+input("Acquisition initiated")

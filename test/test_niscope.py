@@ -1,7 +1,9 @@
+from __future__ import print_function
+from builtins import object
 import niScope
+import unittest
 
-
-class test_niscope:
+class TestNIScope(unittest.TestCase):
     def setUp(self):
         self.scope = niScope.Scope("Dev4")
 
@@ -11,13 +13,13 @@ class test_niscope:
     def test_load(self):
         pass
 
-    def test_aquisition(self):
+    def test_acquisition(self):
         self.scope.ConfigureHorizontalTiming()
         self.scope.ConfigureVertical(channelList="0")
         self.scope.ConfigureTrigger('Immediate')
         self.scope.InitiateAcquisition()
 
-    def test_aquisition_2channels(self):
+    def test_acquisition_2channels(self):
         self.scope.ConfigureHorizontalTiming()
         self.scope.ConfigureVertical(channelList="0")
         self.scope.ConfigureVertical(channelList="1")
@@ -27,7 +29,7 @@ class test_niscope:
         data = numpy.zeros((1000, 2), dtype=numpy.float64)
         self.scope.Fetch("0,1", data)
 
-    def test_aquisition_2channels_uninitialized_buffer(self):
+    def test_acquisition_2channels_uninitialized_buffer(self):
         self.scope.ConfigureHorizontalTiming()
         self.scope.ConfigureVertical(channelList="0")
         self.scope.ConfigureVertical(channelList="1")
@@ -36,7 +38,7 @@ class test_niscope:
         import numpy
         data = self.scope.Fetch("0,1")
 
-    def test_aquisition_2channels_2records(self):
+    def test_acquisition_2channels_2records(self):
         self.scope.ConfigureHorizontalTiming(numRecords=2)
         self.scope.ConfigureVertical(channelList="0")
         self.scope.ConfigureVertical(channelList="1")
@@ -46,12 +48,12 @@ class test_niscope:
         data = numpy.zeros((1000, 4), dtype=numpy.float64)
         self.scope.Fetch("0,1", data)
         for info in self.scope.info:
-            print "relativeInitialX=", info.relativeInitialX
-            print "absoluteInitialX", info.absoluteInitialX
-            print "xIncrement", info.xIncrement
-            print "actualSamples", info.actualSamples
-            print "gain", info.gain
-            print "offset", info.offset
+            print("relativeInitialX=", info.relativeInitialX)
+            print("absoluteInitialX", info.absoluteInitialX)
+            print("xIncrement", info.xIncrement)
+            print("actualSamples", info.actualSamples)
+            print("gain", info.gain)
+            print("offset", info.offset)
         del data
 
     def test_autosetup(self):

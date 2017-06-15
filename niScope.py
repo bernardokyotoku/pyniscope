@@ -1,31 +1,37 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import bytes
+# from builtins import str
+# from builtins import object
+# from past.utils import old_div
 __all__ = []
 
 from ordered_symbols import *
 import os
-import sys
-import textwrap
+# import sys
+# import textwrap
 import numpy
 from numpy import ctypeslib, zeros, float64
 from ctypes import create_string_buffer, byref, util
-import ctypes
-import ctypes.util
-import warnings
+# import ctypes
+# import ctypes.util
+# import warnings
 from niScopeTypes import *
 from niScopeTypes import ViInt32
 
 
 #    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niScope.h'
 libnames = ['niScope_32', 'niScope_64']
-lib = Null
+lib = None
 for libname in libnames:
-    if lib is Null:
+    if lib is None:
         lib = util.find_library(libname)
 if lib is None:
     if os.name == 'posix':
-        print 'libniScope_32.so not found, is NI-SCOPE installed?'
+        print('libniScope_32.so not found, is NI-SCOPE installed?')
     raise ImportError
     if os.name == 'nt':
-        print 'niScope.dll not found'
+        print('niScope.dll not found')
     raise ImportError
 if os.name == 'posix':
     libniScope = ctypes.cdll.LoadLibrary(lib)
@@ -43,9 +49,9 @@ class Scope(ViSession):
         func = getattr(libniScope, funcname)
         new_args = []
         for a in args:
-            if isinstance(a, unicode):
-                print name, 'argument', a, 'is unicode'
-                new_args.append(str(a))
+            if isinstance(a, str):
+                print(name, 'argument', a, 'is unicode')
+                new_args.append(a.encode())
             else:
                 new_args.append(a)
         status = func(*new_args)
@@ -57,6 +63,8 @@ class Scope(ViSession):
     def __init__(self, resourceName="Dev1", IDQuery=False, resetDevice=False):
         self.info = wfmInfo()
         ViSession.__init__(self, 0)
+        if not isinstance(resourceName, bytes):
+            resourceName = resourceName.encode('utf-8')
         status = self.CALL('init',
                            ViRsrc(resourceName),
                            ViBoolean(IDQuery),
@@ -127,6 +135,7 @@ class Scope(ViSession):
         tizer vertical subsystem, such as the range, offset, coupling, 
         probe attenuation, and the channel.
         """
+        channelList = channelList.encode('utf-8')
         status = self.CALL("ConfigureVertical", self,
                            ViConstString(channelList),
                            ViReal64(voltageRange),
@@ -381,7 +390,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
         """
         attrType = {float: ViReal64,
                     int: ViInt32,
-                    long: ViInt32,
+                    int: ViInt32,
                     bool: ViBoolean,
                     Scope: ViSession,
                     str: ViString,
@@ -399,7 +408,7 @@ no longer want to export and set outputTerminal to NISCOPE_VAL_NONE.
         """
         attrType = {float: ViReal64,
                     int: ViInt32,
-                    long: ViInt32,
+                    int: ViInt32,
                     bool: ViBoolean,
                     Scope: ViSession,
                     str: ViString,
@@ -565,12 +574,12 @@ single record acquisition.
         IVI_MAX_MESSAGE_LEN = 255
 
 
-class Acquisition:
+class Acquisition(object):
     def __iter__(self):
-        class iterator:
+        class iterator(object):
             def __iter__(self):
                 pass
 
-            def next(self):
+            def __next__(self):
 
                 return self.scope.Fetch()
