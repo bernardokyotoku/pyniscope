@@ -1,6 +1,7 @@
 from setuptools import setup
-setup(name='niScope',
+setup(name='niscope',
       version='0.2',
-      py_modules=['niScope', 'niScopeTypes', 'ordered_symbols'],
-      requires=['numpy']
+      py_modules=['niscope', 'niscope.niScopeTypes',
+                  'niscope.ordered_symbols'],
+      install_requires=['numpy']
       )

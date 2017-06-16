@@ -1,26 +1,28 @@
 from __future__ import division
 from __future__ import print_function
-from builtins import bytes
+
+# from builtins import bytes
+
 # from builtins import str
 # from builtins import object
 # from past.utils import old_div
 __all__ = []
 
-from ordered_symbols import *
+from niscope.ordered_symbols import *
 import os
 # import sys
 # import textwrap
 import numpy
-from numpy import ctypeslib, zeros, float64
+from numpy import zeros, float64
 from ctypes import create_string_buffer, byref, util
 # import ctypes
 # import ctypes.util
 # import warnings
-from niScopeTypes import *
-from niScopeTypes import ViInt32
+from niscope.niScopeTypes import *
+from niscope.niScopeTypes import ViInt32
 
 
-#    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niScope.h'
+#    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niscope.h'
 libnames = ['niScope_32', 'niScope_64']
 lib = None
 for libname in libnames:
@@ -31,7 +33,7 @@ if lib is None:
         print('libniScope_32.so not found, is NI-SCOPE installed?')
     raise ImportError
     if os.name == 'nt':
-        print('niScope.dll not found')
+        print('niscope.dll not found')
     raise ImportError
 if os.name == 'posix':
     libniScope = ctypes.cdll.LoadLibrary(lib)

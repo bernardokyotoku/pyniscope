@@ -1,9 +1,9 @@
 from builtins import input
-import niScope
+import niscope
 from nidaqmx import AnalogOutputTask
 import numpy as np
 
-scope = niScope.Scope("Dev4")
+scope = niscope.Scope("Dev4")
 task = AnalogOutputTask()
 task.create_voltage_channel("Dev3/ao3")
 task.configure_timing_sample_clock(source="RTSI0")

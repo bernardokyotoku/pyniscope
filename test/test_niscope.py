@@ -1,11 +1,11 @@
 from __future__ import print_function
-from builtins import object
-import niScope
+# from builtins import object
+import niscope
 import unittest
 
 class TestNIScope(unittest.TestCase):
     def setUp(self):
-        self.scope = niScope.Scope("Dev4")
+        self.scope = niscope.Scope("Dev4")
 
     def tearDown(self):
         self.scope.close()
@@ -67,19 +67,19 @@ class TestNIScope(unittest.TestCase):
 
     def test_set_attribute(self):
         self.scope.SetAttribute(
-            niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
-            niScope.VAL.NORMAL, "")
+            niscope.NISCOPE_ATTR_ACQUISITION_TYPE,
+            niscope.VAL.NORMAL, "")
 
     def test_get_attribute(self):
         value = self.scope.GetAttribute(
-            niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
-            niScope.ViInt32)
-        assert value == niScope.VAL.NORMAL
+            niscope.NISCOPE_ATTR_ACQUISITION_TYPE,
+            niscope.ViInt32)
+        assert value == niscope.VAL.NORMAL
 
     def test_check_attribute(self):
         self.scope.CheckAttribute("",
-                                  niScope.NISCOPE_ATTR_ACQUISITION_TYPE,
-                                  niScope.VAL.NORMAL)
+                                  niscope.NISCOPE_ATTR_ACQUISITION_TYPE,
+                                  niscope.VAL.NORMAL)
 
     def test_ActualSamplingRate(self):
         self.scope.ConfigureHorizontalTiming()
