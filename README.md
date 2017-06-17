@@ -20,6 +20,5 @@ plt.show()
 
 ## Requirements
 The national instruments NI-Scope drivers are required. If you do not have a physical NI scope, it is possible to test pyniscope by installing a simulated instrument in the NI Measurement & Automation Explorer.
-
-[Search ni.com for NI-SCOPE|http://search.ni.com/nisearch/app/main/p/bot/no/ap/tech/lang/en/pg/1/sn/ssnav:dwl/q/ni-scope/]
-On linux pyniscope was origionaly tested with NI-SCOPE 3.1, NI-KAL 2.1, and NI-VISA 5.0.
+[Search ni.com for NI-SCOPE](http://search.ni.com/nisearch/app/main/p/bot/no/ap/tech/lang/en/pg/1/sn/ssnav:dwl/q/ni-scope/).
+Pyniscope was origionaly tested on linux with NI-SCOPE 3.1, NI-KAL 2.1, and NI-VISA 5.0.
