@@ -4,9 +4,10 @@ The package is tested with NI-SCOPE library version 3.3.2 using PCI-5122 cards W
 
 ## Basic usage
 ``` 
-import matplotlib.pyplot as plt import niScope
+import matplotlib.pyplot as plt 
+import niscope
 
-scope = niScope.Scope() 
+scope = niscope.Scope() 
 scope.ConfigureHorizontalTiming() 
 scope.ConfigureVertical() 
 scope.ConfigureTrigger("Edge",TRIGGER_SOURCE.EXTERNAL,2.5,SLOPE.POSITIVE,0,0)
