@@ -24,21 +24,26 @@ from niscope.niScopeTypes import ViInt32
 
 #    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niscope.h'
 libnames = ['niScope_32', 'niScope_64']
-lib = None
+libniScope = None
 for libname in libnames:
-    if lib is None:
-        lib = util.find_library(libname)
-if lib is None:
+    if util.find_library(libname) is not None:
+        if os.name == 'posix':
+            try:
+                libniScope = ctypes.cdll.LoadLibrary(libname)
+            except OSError:
+                pass
+        if os.name == 'nt':
+            try:
+                libniScope = ctypes.windll.LoadLibrary(libname)
+            except OSError:
+                pass
+if libniScope is None:
     if os.name == 'posix':
         print('libniScope_32.so not found, is NI-SCOPE installed?')
     raise ImportError
     if os.name == 'nt':
         print('niscope.dll not found')
     raise ImportError
-if os.name == 'posix':
-    libniScope = ctypes.cdll.LoadLibrary(lib)
-if os.name == 'nt':
-    libniScope = ctypes.windll.LoadLibrary(lib)
 
 
 class Scope(ViSession):
