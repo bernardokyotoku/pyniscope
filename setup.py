@@ -7,7 +7,7 @@ setup(name='pyniscope',
       author_email="jvdude.developer@mailnull.com",
       description="Python wrapper for NI Oscilloscopes",
       url="https://github.com/bernardokyotoku/pyniscope",
-      long_description=open("README.md").read(),
+      long_description=open("README.rst").read(),
       classifiers=[
         "Programming Language :: Python",
         "Development Status :: 4 - Beta",
@@ -17,10 +17,10 @@ setup(name='pyniscope',
         "Operating System :: Microsoft :: Windows :: Windows 7",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 2.7"
+        "Programming Language :: Python :: 2.7",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Intended Audience :: Science/Research"
+        "Intended Audience :: Science/Research",
     ],
 
     )
