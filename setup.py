@@ -1,6 +1,6 @@
 from setuptools import setup
 setup(name='pyniscope',
-      version='0.3',
+      version='0.4.0',
       packages=['niscope'],
       install_requires=['numpy'],
       author="Bernardo Kyotoku, John Vishnefske",

@@ -22,38 +22,26 @@ from niscope.niScopeTypes import *
 from niscope.niScopeTypes import ViInt32
 
 
-#    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niscope.h'
-libnames = ['niScope_32', 'niScope_64']
-libniScope = None
-for libname in libnames:
-    if util.find_library(libname) is not None:
-        if os.name == 'posix':
-            try:
-                libniScope = ctypes.cdll.LoadLibrary(libname)
-            except OSError:
-                pass
-        if os.name == 'nt':
-            try:
-                libniScope = ctypes.windll.LoadLibrary(libname)
-            except OSError:
-                pass
-if libniScope is None:
-    if os.name == 'posix':
-        print('libniScope_32.so not found, is NI-SCOPE installed?')
-    raise ImportError
-    if os.name == 'nt':
-        print('niscope.dll not found')
-    raise ImportError
-
-
 class Scope(ViSession):
+    _libniscope = None
+    def __init__(self, resourceName="Dev1", IDQuery=False, resetDevice=False):
+        self.info = wfmInfo()
+        ViSession.__init__(self, 0)
+        if not isinstance(resourceName, bytes):
+            resourceName = resourceName.encode('utf-8')
+        status = self.CALL('init',
+                           ViRsrc(resourceName),
+                           ViBoolean(IDQuery),
+                           ViBoolean(resetDevice),
+                           byref(self))
+        return None
 
     def CALL(self, name, *args):
         """
-        Calls libniScope function "name" and arguments "args".
+        Calls libniscope function "name" and arguments "args".
         """
         funcname = 'niScope_' + name
-        func = getattr(libniScope, funcname)
+        func = getattr(self.libniscope, funcname)
         new_args = []
         for a in args:
             if isinstance(a, str):
@@ -67,17 +55,32 @@ class Scope(ViSession):
             raise Exception(message)
         return status
 
-    def __init__(self, resourceName="Dev1", IDQuery=False, resetDevice=False):
-        self.info = wfmInfo()
-        ViSession.__init__(self, 0)
-        if not isinstance(resourceName, bytes):
-            resourceName = resourceName.encode('utf-8')
-        status = self.CALL('init',
-                           ViRsrc(resourceName),
-                           ViBoolean(IDQuery),
-                           ViBoolean(resetDevice),
-                           byref(self))
-        return None
+    @property
+    def libniscope(self):
+        if Scope._libniscope is not None:
+            return Scope._libniscope
+        #    include_niScope_h = os.environ['NIIVIPATH']+'Include\\niscope.h'
+        libnames = ['niScope_32', 'niScope_64']
+        for libname in libnames:
+            if util.find_library(libname) is not None:
+                if os.name == 'posix':
+                    try:
+                        Scope._libniscope = ctypes.cdll.LoadLibrary(libname)
+                    except OSError:
+                        pass
+                if os.name == 'nt':
+                    try:
+                        Scope._libniscope = ctypes.windll.LoadLibrary(libname)
+                    except OSError:
+                        pass
+        if Scope._libniscope is None:
+            if os.name == 'posix':
+                print('libniScope_32.so not found, is NI-SCOPE installed?')
+            raise ImportError
+            if os.name == 'nt':
+                print('niscope.dll not found')
+            raise ImportError
+        return Scope._libniscope
 
     def AutoSetup(self):
         """
