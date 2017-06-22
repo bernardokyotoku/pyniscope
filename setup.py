@@ -21,6 +21,5 @@ setup(name='pyniscope',
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Intended Audience :: Science/Research",
-    ],
-
-    )
+      ],
+      )
