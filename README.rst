@@ -12,11 +12,17 @@ Example::
 
     import matplotlib.pyplot as plt
     import niscope
+    from niscope.niScopeTypes import TRIGGER_SOURCE, SLOPE
 
-    scope = niscope.Scope()
+    scope = niscope.Scope("dev1")
     scope.ConfigureHorizontalTiming()
     scope.ConfigureVertical()
-    scope.ConfigureTrigger("Edge",TRIGGER_SOURCE.EXTERNAL,2.5,SLOPE.POSITIVE,0,0)
+    scope.ConfigureTrigger("Edge", 
+                           triggerSource=TRIGGER_SOURCE.EXTERNAL,
+                           level=2.5,
+                           slope=SLOPE.POSITIVE,
+                           holdoff=0,
+                           delay=0)
     scope.InitiateAcquisition()
     raw_input("Enter")
     data = scope.Fetch()
