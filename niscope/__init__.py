@@ -289,7 +289,7 @@ class Scope(ViSession):
             holdoff = 0				,
             delay = 0: (
                             ViConstString(triggerSource		),
-                            ViBoolean(enableDCestore		),
+                            ViBoolean(enableDCRestore		),
                             ATTR_TV_TRIGGER_SIGNAL_FORMAT(signalFormat	),
                             ViInt32(event			),
                             ViInt32(lineNumber		),
